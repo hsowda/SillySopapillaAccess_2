@@ -7,6 +7,18 @@
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Auth System</a>
+            {% if current_user.is_authenticated %}
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+                <button type="button" class="btn btn-danger btn-sm ms-2" id="logoutButton">Sign Out</button>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
     <div class="container mt-5">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

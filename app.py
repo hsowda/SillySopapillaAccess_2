@@ -60,6 +60,29 @@ def login():
     
     return render_template('login.html')
 
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
+@app.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    try:
+        current_user.first_name = request.form.get('first_name')
+        current_user.last_name = request.form.get('last_name')
+        current_user.phone = request.form.get('phone')
+        current_user.bio = request.form.get('bio')
+        
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while updating your profile.', 'error')
+        print(f"Error updating profile: {str(e)}")
+    
+    return redirect(url_for('profile'))
+
 @app.route('/logout')
 @login_required
 def logout():
