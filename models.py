@@ -4,10 +4,13 @@ from time import time
 import jwt
 from flask import current_app
 from datetime import datetime, timedelta
+import logging
 
 db = SQLAlchemy()
 
 class User(UserMixin, db.Model):
+    __tablename__ = 'users'  # Explicitly set table name
+    
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
@@ -44,27 +47,27 @@ class User(UserMixin, db.Model):
             
             # Additional verification checks
             if not user or not user.reset_token:
-                print("No user found or no reset token")
+                logging.warning("No user found or no reset token")
                 return None
                 
             if user.reset_token != token:
-                print("Token mismatch")
+                logging.warning("Token mismatch")
                 return None
                 
             if datetime.utcnow() > user.reset_token_expiration:
-                print("Token has expired")
+                logging.warning("Token has expired")
                 return None
                 
             return user
             
         except jwt.ExpiredSignatureError:
-            print("JWT token has expired")
+            logging.warning("JWT token has expired")
             return None
         except jwt.InvalidTokenError:
-            print("Invalid JWT token")
+            logging.warning("Invalid JWT token")
             return None
         except Exception as e:
-            print(f"Error verifying token: {str(e)}")
+            logging.error(f"Error verifying token: {str(e)}")
             return None
 
     def __repr__(self):
