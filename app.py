@@ -23,21 +23,29 @@ def load_user(user_id):
 @app.cli.command("init-db")
 def init_db():
     with app.app_context():
+        print("Dropping all tables...")
+        db.drop_all()
+        print("Creating all tables...")
         db.create_all()
         print("Database initialized!")
         
-        # Create test user if it doesn't exist
+        # Delete existing test user if exists
         test_user = User.query.filter_by(email='test@example.com').first()
-        if not test_user:
-            test_user = User(
-                email='test@example.com',
-                password_hash=generate_password_hash('password123')
-            )
-            db.session.add(test_user)
+        if test_user:
+            db.session.delete(test_user)
             db.session.commit()
-            print("Test user created successfully!")
-        else:
-            print("Test user already exists")
+            print("Existing test user deleted")
+        
+        # Create new test user with consistent hashing method
+        password_hash = generate_password_hash('password123', method='pbkdf2:sha256')
+        test_user = User(
+            email='test@example.com',
+            password_hash=password_hash
+        )
+        db.session.add(test_user)
+        db.session.commit()
+        print(f"Test user created successfully!")
+        print(f"Generated password hash: {password_hash}")
 
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
@@ -54,6 +62,7 @@ def login():
         
         if user:
             print("User found in database")
+            print(f"Stored password hash: {user.password_hash}")
             if check_password_hash(user.password_hash, password):
                 print("Password hash check passed")
                 login_user(user)
@@ -76,5 +85,17 @@ def logout():
 
 if __name__ == '__main__':
     with app.app_context():
+        db.drop_all()
         db.create_all()
+        # Create test user with consistent hashing method
+        test_user = User.query.filter_by(email='test@example.com').first()
+        if not test_user:
+            password_hash = generate_password_hash('password123', method='pbkdf2:sha256')
+            test_user = User(
+                email='test@example.com',
+                password_hash=password_hash
+            )
+            db.session.add(test_user)
+            db.session.commit()
+            print(f"Test user created with hash: {password_hash}")
     app.run(host='0.0.0.0', port=8000)
