@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const externalContentModal = document.getElementById('externalContentModal') ? 
             new bootstrap.Modal(document.getElementById('externalContentModal')) : null;
         const logoutButton = document.getElementById('logoutButton');
-        const gmailButton = document.getElementById('gmailButton');
         const externalContentFrame = document.getElementById('externalContentFrame');
 
         // Handle iframe loading errors for external content
@@ -114,13 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     logError('logout button click', error);
                     alert('An error occurred. Please try again.');
                 }
-            });
-        }
-
-        if (gmailButton) {
-            gmailButton.addEventListener('click', function() {
-                const mailtoLink = 'mailto:someone@example.com?subject=This%20is%20the%20subject&cc=someone_else@example.com&body=This%20is%20the%20body';
-                window.location.href = mailtoLink;
             });
         }
     } catch (error) {
