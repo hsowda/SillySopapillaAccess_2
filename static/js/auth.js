@@ -115,13 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-
-        const gmailButton = document.getElementById('gmailButton');
-        if (gmailButton) {
-            gmailButton.addEventListener('click', function() {
-                window.open('mailto:sowdapop5@gmail.com', '_blank');
-            });
-        }
     } catch (error) {
         logError('DOM Content Loaded', error);
     }
