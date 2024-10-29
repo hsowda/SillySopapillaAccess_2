@@ -24,48 +24,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const loginForm = document.getElementById('loginForm');
         const externalContentModal = document.getElementById('externalContentModal') ? 
             new bootstrap.Modal(document.getElementById('externalContentModal')) : null;
-        const gmailModal = document.getElementById('gmailModal') ? 
-            new bootstrap.Modal(document.getElementById('gmailModal')) : null;
         const logoutButton = document.getElementById('logoutButton');
         const gmailButton = document.getElementById('gmailButton');
         const externalContentFrame = document.getElementById('externalContentFrame');
-        const gmailFrame = document.querySelector('#gmailModal iframe');
 
-        // Handle iframe loading errors
-        function handleIframeError(iframe, fallbackUrl) {
-            try {
-                iframe.addEventListener('error', function(e) {
-                    logError('iframe loading', e);
-                    if (fallbackUrl) {
-                        window.open(fallbackUrl, '_blank');
-                        if (iframe === gmailFrame && gmailModal) {
-                            gmailModal.hide();
-                        }
-                    }
-                });
-            } catch (error) {
-                logError('handleIframeError setup', error);
-            }
-        }
-
-        // Set up iframe error handlers
+        // Handle iframe loading errors for external content
         if (externalContentFrame) {
-            handleIframeError(externalContentFrame);
-        }
-
-        if (gmailFrame) {
-            handleIframeError(gmailFrame, 'https://gmail.com');
-            
-            gmailFrame.addEventListener('load', function() {
-                try {
-                    const test = gmailFrame.contentWindow.location.href;
-                } catch (e) {
-                    logError('Gmail iframe access', e);
-                    window.open('https://gmail.com', '_blank');
-                    if (gmailModal) {
-                        gmailModal.hide();
-                    }
-                }
+            externalContentFrame.addEventListener('error', function(e) {
+                logError('iframe loading', e);
             });
         }
         
@@ -153,17 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (gmailButton) {
             gmailButton.addEventListener('click', function() {
-                try {
-                    if (externalContentModal) {
-                        externalContentModal.hide();
-                    }
-                    if (gmailModal) {
-                        gmailModal.show();
-                    }
-                } catch (error) {
-                    logError('Gmail modal', error);
-                    window.open('https://gmail.com', '_blank');
-                }
+                window.open('https://gmail.com', '_blank');
             });
         }
     } catch (error) {
