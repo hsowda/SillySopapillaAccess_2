@@ -13,7 +13,7 @@
             {% if current_user.is_authenticated %}
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
-                <button type="button" class="btn btn-danger btn-sm ms-2" id="logoutButton">Sign Out</button>
+                <button type="button" class="btn btn-danger btn-sm ms-2 logout-btn">Sign Out</button>
             </div>
             {% endif %}
         </div>
@@ -41,7 +41,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="externalContentModalLabel">External Content</h5>
                     <div class="ms-auto">
-                        <button type="button" class="btn btn-danger btn-sm" id="logoutButton">Sign Out</button>
+                        <button type="button" class="btn btn-danger btn-sm logout-btn">Sign Out</button>
                         <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                 </div>

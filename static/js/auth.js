@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const loginForm = document.getElementById('loginForm');
         const externalContentModal = document.getElementById('externalContentModal') ? 
             new bootstrap.Modal(document.getElementById('externalContentModal')) : null;
-        const logoutButton = document.getElementById('logoutButton');
+        const logoutButtons = document.querySelectorAll('.logout-btn');
         const externalContentFrame = document.getElementById('externalContentFrame');
 
         // Handle iframe loading errors for external content
@@ -92,27 +92,40 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        if (logoutButton) {
-            logoutButton.addEventListener('click', function() {
-                try {
-                    fetch('/logout')
+        // Handle logout for all logout buttons
+        if (logoutButtons.length > 0) {
+            logoutButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    try {
+                        e.preventDefault();
+                        fetch('/logout', {
+                            method: 'GET',
+                            credentials: 'same-origin'
+                        })
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! status: ${response.status}`);
                             }
+                            // Hide modal if it exists and is shown
                             if (externalContentModal) {
                                 externalContentModal.hide();
+                                // Wait for modal to finish hiding before redirecting
+                                setTimeout(() => {
+                                    window.location.href = '/login';
+                                }, 300);
+                            } else {
+                                window.location.href = '/login';
                             }
-                            window.location.href = '/login';
                         })
                         .catch(error => {
                             logError('logout', error);
                             alert('An error occurred during logout. Please try again.');
                         });
-                } catch (error) {
-                    logError('logout button click', error);
-                    alert('An error occurred. Please try again.');
-                }
+                    } catch (error) {
+                        logError('logout button click', error);
+                        alert('An error occurred. Please try again.');
+                    }
+                });
             });
         }
     } catch (error) {
