@@ -124,19 +124,6 @@ wheels = [
 ]
 
 [[package]]
-name = "flask-mail"
-version = "0.10.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "blinker" },
-    { name = "flask" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/ba/29/e92dc84c675d1e8d260d5768eb3fb65c70cbd33addecf424187587bee862/flask_mail-0.10.0.tar.gz", hash = "sha256:44083e7b02bbcce792209c06252f8569dd5a325a7aaa76afe7330422bd97881d", size = 8152 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e4/c0/a81083da779f482494d49195d8b6c9fde21072558253e4a9fb2ec969c3c1/flask_mail-0.10.0-py3-none-any.whl", hash = "sha256:a451e490931bb3441d9b11ebab6812a16bfa81855792ae1bf9c1e1e22c4e51e7", size = 8529 },
-]
-
-[[package]]
 name = "flask-sqlalchemy"
 version = "3.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -321,26 +308,15 @@ wheels = [
 ]
 
 [[package]]
-name = "pyjwt"
-version = "2.9.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fb/68/ce067f09fca4abeca8771fe667d89cc347d1e99da3e093112ac329c6020e/pyjwt-2.9.0.tar.gz", hash = "sha256:7e1e5b56cc735432a7369cbfa0efe50fa113ebecdc04ae6922deba8b84582d0c", size = 78825 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/79/84/0fdf9b18ba31d69877bd39c9cd6052b47f3761e9910c15de788e519f079f/PyJWT-2.9.0-py3-none-any.whl", hash = "sha256:3b02fb0f44517787776cf48f2ae25d8e14f300e6d7545a4315cee571a415e850", size = 22344 },
-]
-
-[[package]]
 name = "repl-nix-sillysopapillaaccess"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "flask" },
     { name = "flask-login" },
-    { name = "flask-mail" },
     { name = "flask-sqlalchemy" },
     { name = "oauthlib" },
     { name = "psycopg2-binary" },
-    { name = "pyjwt" },
     { name = "requests" },
     { name = "werkzeug" },
 ]
@@ -349,11 +325,9 @@ dependencies = [
 requires-dist = [
     { name = "flask", specifier = ">=3.0.3" },
     { name = "flask-login", specifier = ">=0.6.3" },
-    { name = "flask-mail", specifier = ">=0.10.0" },
     { name = "flask-sqlalchemy", specifier = ">=3.1.1" },
     { name = "oauthlib", specifier = ">=3.2.2" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
-    { name = "pyjwt" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "werkzeug", specifier = ">=3.0.6" },
 ]
