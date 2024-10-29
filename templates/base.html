@@ -7,18 +7,6 @@
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">Auth System</a>
-            {% if current_user.is_authenticated %}
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
-                <button type="button" class="btn btn-danger btn-sm ms-2 logout-btn">Sign Out</button>
-            </div>
-            {% endif %}
-        </div>
-    </nav>
-
     <div class="container mt-5">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -40,11 +28,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="externalContentModalLabel">External Content</h5>
-                    <div class="ms-auto">
-                        <button type="button" class="btn btn-danger btn-sm logout-btn">Sign Out</button>
-                        <a href="https://pastebin.com/" class="btn btn-primary btn-sm ms-2">Gmail</a>
-                        <button type="button" class="btn-close ms-2" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                    <button type="button" class="btn btn-danger btn-sm ms-2" id="logoutButton">Sign Out</button>
+                    <a href="mailto:someone@example.com?subject=This%20is%20the%20subject&cc=someone_else@example.com&body=This%20is%20the%20body" class="btn btn-primary btn-sm ms-2">Gmail</a>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-0">
                     <iframe id="externalContentFrame" src="" style="width: 100%; height: 100%; border: none;"></iframe>
