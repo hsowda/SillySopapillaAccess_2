@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const externalContentModal = new bootstrap.Modal(document.getElementById('externalContentModal'));
+    const logoutButton = document.getElementById('logoutButton');
     
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
@@ -46,6 +47,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error:', error);
                 alert('An error occurred during login. Please try again.');
             });
+        });
+    }
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            fetch('/logout')
+                .then(response => {
+                    externalContentModal.hide();
+                    window.location.href = '/login';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred during logout. Please try again.');
+                });
         });
     }
 });
