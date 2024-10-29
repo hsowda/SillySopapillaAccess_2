@@ -11,7 +11,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    reset_token = db.Column(db.String(100), unique=True)
+    reset_token = db.Column(db.String(300), unique=True)
     reset_token_expiration = db.Column(db.DateTime)
     
     def get_reset_token(self, expires_in=600):  # 10 minutes expiration
