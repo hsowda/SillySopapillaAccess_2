@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from models import db, User
 import config
 
@@ -55,4 +55,16 @@ def logout():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        
+        # Create test user if it doesn't exist
+        test_user = User.query.filter_by(email='test@example.com').first()
+        if not test_user:
+            test_user = User(
+                email='test@example.com',
+                password_hash=generate_password_hash('password123')
+            )
+            db.session.add(test_user)
+            db.session.commit()
+            print("Test user created successfully!")
+            
     app.run(host='0.0.0.0', port=8000)
