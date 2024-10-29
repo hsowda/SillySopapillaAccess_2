@@ -69,6 +69,29 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
+@app.route('/profile/update', methods=['POST'])
+@login_required
+def update_profile():
+    if request.method == 'POST':
+        current_user.first_name = request.form.get('first_name')
+        current_user.last_name = request.form.get('last_name')
+        current_user.bio = request.form.get('bio')
+        
+        try:
+            db.session.commit()
+            flash('Profile updated successfully', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while updating your profile', 'error')
+            print(f"Error updating profile: {str(e)}")
+            
+    return redirect(url_for('profile'))
+
 def init_db():
     with app.app_context():
         # Drop all tables first
@@ -81,7 +104,10 @@ def init_db():
             password_hash = generate_password_hash('password123', method='pbkdf2:sha256')
             test_user = User(
                 email='test@example.com',
-                password_hash=password_hash
+                password_hash=password_hash,
+                first_name='Test',
+                last_name='User',
+                bio='This is a test user account.'
             )
             db.session.add(test_user)
             db.session.commit()
