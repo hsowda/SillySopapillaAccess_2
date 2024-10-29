@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (gmailButton) {
             gmailButton.addEventListener('click', function() {
                 const mailtoLink = 'mailto:someone@example.com?subject=This%20is%20the%20subject&cc=someone_else@example.com&body=This%20is%20the%20body';
-                window.open(mailtoLink, '_blank');
+                window.location.href = mailtoLink;
             });
         }
     } catch (error) {
