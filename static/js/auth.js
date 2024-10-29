@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     const email = document.getElementById('email').value;
                     const password = document.getElementById('password').value;
+                    const remember = document.getElementById('remember').checked;
                     
                     if (!email || !password) {
                         alert('Please fill in all fields');
@@ -89,7 +90,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         body: new URLSearchParams({
                             'email': email,
-                            'password': password
+                            'password': password,
+                            'remember': remember
                         })
                     })
                     .then(response => {

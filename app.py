@@ -26,6 +26,7 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        remember = request.form.get('remember') == 'true'
         
         print(f"Login attempt for email: {email}")
         user = User.query.filter_by(email=email).first()
@@ -34,7 +35,10 @@ def login():
             print("User found in database")
             if check_password_hash(user.password_hash, password):
                 print("Password hash check passed")
-                login_user(user)
+                login_user(user, remember=remember)
+                if remember:
+                    token = user.generate_remember_token()
+                    db.session.commit()
                 print("User logged in successfully")
                 return jsonify({
                     'success': True,
@@ -59,11 +63,17 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    if current_user.is_authenticated:
+        current_user.remember_token = None
+        db.session.commit()
     logout_user()
     return redirect(url_for('login'))
 
-if __name__ == '__main__':
+def init_db():
     with app.app_context():
+        # Drop all tables first
+        db.drop_all()
+        # Create all tables
         db.create_all()
         # Create test user if it doesn't exist
         test_user = User.query.filter_by(email='test@example.com').first()
@@ -75,4 +85,7 @@ if __name__ == '__main__':
             )
             db.session.add(test_user)
             db.session.commit()
+
+if __name__ == '__main__':
+    init_db()  # Initialize database with new schema
     app.run(host='0.0.0.0', port=8000)
