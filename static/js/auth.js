@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const externalContentModal = new bootstrap.Modal(document.getElementById('externalContentModal'));
+    const gmailModal = new bootstrap.Modal(document.getElementById('gmailModal'));
     const logoutButton = document.getElementById('logoutButton');
+    const gmailButton = document.getElementById('gmailButton');
     
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
@@ -61,6 +63,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Error:', error);
                     alert('An error occurred during logout. Please try again.');
                 });
+        });
+    }
+
+    if (gmailButton) {
+        gmailButton.addEventListener('click', function() {
+            externalContentModal.hide();
+            gmailModal.show();
         });
     }
 });
