@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash, generate_password_hash
 from models import db, User
@@ -50,9 +50,6 @@ def init_db():
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect('https://silly-sopapillas-b41c68.netlify.app')
-    
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -67,13 +64,23 @@ def login():
                 print("Password hash check passed")
                 login_user(user)
                 print("User logged in successfully")
-                return redirect('https://silly-sopapillas-b41c68.netlify.app')
+                return jsonify({
+                    'success': True,
+                    'redirect_url': 'https://silly-sopapillas-b41c68.netlify.app',
+                    'message': 'Login successful!'
+                })
             else:
                 print("Password hash check failed")
+                return jsonify({
+                    'success': False,
+                    'message': 'Invalid password'
+                })
         else:
             print("User not found in database")
-        
-        flash('Invalid email or password', 'error')
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            })
     
     return render_template('login.html')
 

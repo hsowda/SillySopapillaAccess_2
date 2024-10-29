@@ -21,6 +21,21 @@
         
         {% block content %}{% endblock %}
     </div>
+
+    <!-- External Content Modal -->
+    <div class="modal fade" id="externalContentModal" tabindex="-1" aria-labelledby="externalContentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="externalContentModalLabel">External Content</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="externalContentFrame" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
