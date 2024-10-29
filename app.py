@@ -5,6 +5,7 @@ from flask_mail import Mail, Message
 from models import db, User
 import config
 from datetime import datetime
+import logging
 
 app = Flask(__name__)
 app.config.from_object(config.Config)
@@ -26,15 +27,31 @@ def load_user(user_id):
 
 def send_password_reset_email(user):
     token = user.get_reset_token()
+    print(f"Generated reset token for user {user.email}: {token[:10]}...")
+    
     msg = Message('Password Reset Request',
-                  sender='noreply@demo.com',
+                  sender=app.config['MAIL_USERNAME'],
                   recipients=[user.email])
-    msg.body = f'''To reset your password, visit the following link:
+    msg.body = f'''Hello,
+
+You have requested to reset your password. Please click on the following link to reset your password:
+
 {url_for('reset_password', token=token, _external=True)}
 
-If you did not make this request then simply ignore this email and no changes will be made.
+If you did not make this request, please ignore this email and no changes will be made to your account.
+
+This link will expire in 10 minutes.
+
+Best regards,
+Your Application Team
 '''
-    mail.send(msg)
+    try:
+        mail.send(msg)
+        print(f"Password reset email sent successfully to {user.email}")
+        return True
+    except Exception as e:
+        print(f"Error sending password reset email to {user.email}: {str(e)}")
+        return False
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
@@ -42,12 +59,17 @@ def reset_password_request():
         return redirect(url_for('index'))
     if request.method == 'POST':
         email = request.form.get('email')
+        print(f"Password reset requested for email: {email}")
         user = User.query.filter_by(email=email).first()
         if user:
-            send_password_reset_email(user)
-            flash('Check your email for the instructions to reset your password', 'info')
+            print(f"User found in database: {user.email}")
+            if send_password_reset_email(user):
+                flash('Check your email for the instructions to reset your password', 'info')
+            else:
+                flash('An error occurred sending the password reset email. Please try again later.', 'error')
             return redirect(url_for('login'))
         else:
+            print(f"No user found with email: {email}")
             flash('Email address not found', 'error')
     return render_template('reset_password_request.html')
 
@@ -56,9 +78,12 @@ def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     user = User.verify_reset_token(token)
+    print(f"Attempting to verify reset token: {token[:10]}...")
     if not user:
+        print("Invalid or expired reset token")
         flash('Invalid or expired reset token', 'error')
         return redirect(url_for('login'))
+    print(f"Valid token for user: {user.email}")
     if request.method == 'POST':
         password = request.form.get('password')
         password2 = request.form.get('password2')
@@ -67,6 +92,7 @@ def reset_password(token):
             return render_template('reset_password.html', token=token)
         user.password_hash = generate_password_hash(password)
         db.session.commit()
+        print(f"Password successfully reset for user: {user.email}")
         flash('Your password has been reset', 'success')
         return redirect(url_for('login'))
     return render_template('reset_password.html', token=token)
@@ -83,7 +109,6 @@ def login():
         
         if user:
             print("User found in database")
-            print(f"Stored password hash: {user.password_hash}")
             if check_password_hash(user.password_hash, password):
                 print("Password hash check passed")
                 login_user(user)
