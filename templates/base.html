@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authentication System</title>
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <style>
+    .btn-custom {
+        transition: all 0.3s ease;
+    }
+    .btn-custom:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -41,8 +50,8 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="externalContentModalLabel">External Content</h5>
                     <button type="button" class="btn btn-danger btn-sm ms-2" id="logoutButton">Sign Out</button>
-                    <a href="mailto:sowdapop5@gmail.com" class="btn btn-primary btn-sm ms-2">Gmail</a>
-                    <a href="https://pastebin.com" class="btn btn-primary btn-sm ms-2">Pastebin</a>
+                    <a href="mailto:sowdapop5@gmail.com" class="btn btn-primary btn-sm ms-2 btn-custom" target="_blank">Gmail</a>
+                    <a href="https://pastebin.com" class="btn btn-primary btn-sm ms-2 btn-custom" target="_blank">Pastebin</a>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-0">
