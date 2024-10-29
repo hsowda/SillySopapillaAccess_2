@@ -8,6 +8,9 @@ from flask_mail import Mail, Message
 from models import db, User
 import config
 from datetime import datetime
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 app.config.from_object(config.Config)
@@ -27,7 +30,28 @@ db.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+def verify_smtp_connection():
+    try:
+        logging.debug("Attempting to verify SMTP connection...")
+        logging.debug(f"SMTP Server: {app.config['MAIL_SERVER']}, Port: {app.config['MAIL_PORT']}")
+        
+        with mail.connect() as conn:
+            logging.info("SMTP connection successful")
+            return True
+    except Exception as e:
+        logging.error(f"SMTP connection failed: {str(e)}")
+        if "authentication failed" in str(e).lower():
+            logging.error("SMTP authentication failed. Please check credentials.")
+        elif "connection refused" in str(e).lower():
+            logging.error("SMTP connection refused. Please check server and port settings.")
+        return False
+
 def send_password_reset_email(user):
+    # First verify SMTP connection
+    if not verify_smtp_connection():
+        logging.error("Failed to establish SMTP connection. Cannot send reset email.")
+        return False
+
     logging.debug(f"Generating reset token for user: {user.email}")
     token = user.get_reset_token()
     logging.debug(f"Generated reset token: {token[:10]}...")
@@ -49,11 +73,25 @@ Best regards,
 Your Application Team
 '''
     try:
-        logging.debug(f"Attempting to send reset email to: {user.email}")
-        logging.debug(f"Mail server config - Server: {app.config['MAIL_SERVER']}, Port: {app.config['MAIL_PORT']}")
-        mail.send(msg)
-        logging.info(f"Password reset email sent successfully to {user.email}")
-        return True
+        logging.debug(f"Preparing to send reset email to: {user.email}")
+        logging.debug(f"Mail configuration - Server: {app.config['MAIL_SERVER']}, Port: {app.config['MAIL_PORT']}")
+        logging.debug(f"Using TLS: {app.config['MAIL_USE_TLS']}")
+        logging.debug(f"Authenticating as: {app.config['MAIL_USERNAME']}")
+        
+        with mail.connect() as conn:
+            logging.debug("SMTP connection established")
+            logging.debug("Attempting to send email...")
+            conn.send(msg)
+            logging.info(f"Password reset email sent successfully to {user.email}")
+            return True
+            
+    except smtplib.SMTPAuthenticationError as e:
+        logging.error(f"SMTP Authentication failed: {str(e)}")
+        logging.error("Please check MAIL_USERNAME and MAIL_PASSWORD configuration")
+        return False
+    except smtplib.SMTPException as e:
+        logging.error(f"SMTP Error occurred: {str(e)}")
+        return False
     except Exception as e:
         logging.error(f"Failed to send password reset email to {user.email}")
         logging.error(f"Error details: {str(e)}")
@@ -99,6 +137,8 @@ def reset_password(token):
             flash('Passwords do not match', 'error')
             return render_template('reset_password.html', token=token)
         user.password_hash = generate_password_hash(password)
+        user.reset_token = None  # Clear the reset token after successful reset
+        user.reset_token_expiration = None
         db.session.commit()
         logging.info(f"Password successfully reset for user: {user.email}")
         flash('Your password has been reset', 'success')
@@ -147,37 +187,8 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.cli.command("init-db")
-def init_db():
-    with app.app_context():
-        logging.info("Starting database initialization...")
-        logging.info("Dropping all tables...")
-        db.drop_all()
-        logging.info("Creating all tables...")
-        db.create_all()
-        logging.info("Database initialized!")
-        
-        # Delete existing test user if exists
-        test_user = User.query.filter_by(email='test@example.com').first()
-        if test_user:
-            db.session.delete(test_user)
-            db.session.commit()
-            logging.info("Existing test user deleted")
-        
-        # Create new test user with consistent hashing method
-        password_hash = generate_password_hash('password123', method='pbkdf2:sha256')
-        test_user = User(
-            email='test@example.com',
-            password_hash=password_hash
-        )
-        db.session.add(test_user)
-        db.session.commit()
-        logging.info("Test user created successfully!")
-        logging.debug(f"Generated password hash: {password_hash}")
-
 if __name__ == '__main__':
     with app.app_context():
-        # Ensure all tables exist
         db.create_all()
         logging.info("Database tables created")
         
